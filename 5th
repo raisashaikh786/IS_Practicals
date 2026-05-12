@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diffie-Hellman Key Exchange (Alice & Bob)</title>
+<style>
+body { font-family: sans-serif; max-width: 600px; margin: 20px auto; padding: 0 10px; }
+.container { border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; }
+h2, h3 { color: #333; }
+p { margin: 5px 0; }
+input, button { padding: 8px; margin-top: 5px; }
+button { cursor: pointer; }
+</style>
+</head>
+<body>
+<h1>Diffie-Hellman Key Exchange Simulation</h1>
+<div class="container">
+<h2>Public Parameters (Agreed upon by Alice and Bob)</h2>
+<p><strong>Prime Number (P):</strong> <span id="P_val">23</span></p>
+<p><strong>Generator (G):</strong> <span id="G_val">5</span></p>
+<button onclick="initializeParameters()">Initialize / Reset Parameters</button>
+</div>
+<div class="container">
+<h2>Alice (End User)</h2>
+<label for="alicePrivateKey">Enter Alice's Private Key (a):</label>
+<input type="number" id="alicePrivateKey" min="1" max="22" value="4">
+<button onclick="calculateAlicePublicKey()">Calculate & Send Public Key</button>
+<p><strong>Alice's Public Key (A):</strong> <span id="alicePublicKey"></span></p>
+<p><strong>Alice's Secret Key (KA):</strong> <span id="aliceSecretKey"></span></p>
+</div>
+<div class="container">
+<h2>Bob (JavaScript Application)</h2>
+<p><strong>Bob's Private Key (b):</strong> <span id="bobPrivateKey"></span></p>
+<p><strong>Bob's Public Key (B):</strong> <span id="bobPublicKey"></span></p>
+<p><strong>Bob's Secret Key (KB):</strong> <span id="bobSecretKey"></span></p>
+</div>
+<script>
+// Modular exponentiation: (base^exp) % mod
+function power(base, exp, mod) {
+let result = 1;
+base = base % mod;
+while (exp > 0) {
+if (exp % 2 === 1) result = (result * base) % mod;
+base = (base * base) % mod;
+exp = Math.floor(exp / 2);
+}
+return result;
+}
+// Global variables
+let P, G, a, b, A, B, KA, KB;
+// Initialize public parameters and Bob's private key
+function initializeParameters() {
+P = 23; // Prime number
+G = 5; // Generator
+b = 3; // Bob's private key
+document.getElementById('P_val').textContent = P;
+document.getElementById('G_val').textContent = G;
+document.getElementById('bobPrivateKey').textContent = b;
+// Bob calculates his public key
+B = power(G, b, P);
+document.getElementById('bobPublicKey').textContent = B;
+// Reset Alice's values
+document.getElementById('alicePublicKey').textContent = '';
+document.getElementById('aliceSecretKey').textContent = '';
+document.getElementById('bobSecretKey').textContent = '';
+alert('Parameters initialized. Alice can now enter her private key.');
+}
+// Alice calculates her public key and shared secret
+function calculateAlicePublicKey() {
+a = parseInt(document.getElementById('alicePrivateKey').value);
+if (isNaN(a) || a <= 0 || a >= P) {
+alert(`Please enter a private key 'a' where 0 < a < ${P}.`);
+return;
+}
+// Alice's public key
+A = power(G, a, P);
+document.getElementById('alicePublicKey').textContent = A;
+// Calculate shared secrets
+calculateSharedSecrets();
+}
+// Calculate shared secret keys for both Alice and Bob
+function calculateSharedSecrets() {
+if (A && B) {
+// Alice's secret
+KA = power(B, a, P);
+document.getElementById('aliceSecretKey').textContent = KA;
+// Bob's secret
+KB = power(A, b, P);
+document.getElementById('bobSecretKey').textContent = KB;
+if (KA === KB) {
+alert(`Key exchange successful! Both share the same secret key: ${KA}`);
+} else {
+alert('Key exchange failed. Keys do not match.');
+}
+}
+}
+// Initialize parameters when page loads
+window.onload = initializeParameters;
+</script>
+</body>
+</html>
