@@ -1,0 +1,25 @@
+# Original string with literal backslash
+original_string_val = r"\Helloworld"
+# Convert the string to bytes
+bytes_representation = original_string_val.encode('utf-8')
+and_result_bytes = bytearray()
+xor_result_bytes = bytearray()
+mask_value = 127
+for byte_val in bytes_representation:
+# AND operation
+and_result = byte_val & mask_value
+and_result_bytes.append(and_result)
+# XOR operation
+xor_result = byte_val ^ mask_value
+xor_result_bytes.append(xor_result)
+# Decode results safely (replace invalid characters)
+and_result_string = and_result_bytes.decode('utf-8', errors='replace')
+xor_result_string = xor_result_bytes.decode('utf-8', errors='replace')
+print(f"Original string: {original_string_val}")
+print(f"Mask value: {mask_value}\n")
+print("AND operation results:")
+print(f"Bytes: {and_result_bytes}")
+print(f"String: {and_result_string}\n")
+print("XOR operation results:")
+print(f"Bytes: {xor_result_bytes}")
+print(f"String: {xor_result_string}")
