@@ -1,0 +1,35 @@
+import math
+def encrypt_message(key, message):
+# The transposition cipher fills a grid with the message and reads column by column
+ciphertext = [''] * key
+for column in range(key):
+current_index = column
+while current_index < len(message):
+ciphertext[column] += message[current_index]
+current_index += key
+return ''.join(ciphertext)
+def decrypt_message(key, message):
+# Calculate the number of columns and rows needed for the grid
+num_columns = int(math.ceil(len(message) / float(key)))
+num_rows = key
+num_shaded_boxes = (num_columns * num_rows) - len(message)
+plaintext = [''] * num_columns
+column = 0
+row = 0
+for symbol in message:
+plaintext[column] += symbol
+column += 1
+# If there are no more columns or we're at a shaded box, go back to the first column
+if (column == num_columns) or (column == num_columns - 1 and row >= num_rows - num_shaded_boxes):
+column = 0
+row += 1
+return ''.join(plaintext)
+def main():
+message = 'Transposition technique implementation'
+key = 10
+ciphertext = encrypt_message(key, message)
+print(f"Ciphertext: {ciphertext}")
+decrypted_text = decrypt_message(key, ciphertext)
+print(f"Decrypted Text: {decrypted_text}")
+if __name__ == '__main__':
+main()
