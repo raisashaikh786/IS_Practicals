@@ -1,0 +1,24 @@
+from Crypto.Cipher import DES
+from Crypto.Util.Padding import pad, unpad
+from secrets import token_bytes
+# Generate a random 8-byte (64-bit) key
+key = token_bytes(8)
+print(f"Generated Key: {key.hex()}")
+def encrypt(msg_bytes):
+cipher = DES.new(key, DES.MODE_ECB)
+padded_msg = pad(msg_bytes, DES.block_size)
+ciphertext = cipher.encrypt(padded_msg)
+return ciphertext
+def decrypt(ciphertext_bytes):
+decipher = DES.new(key, DES.MODE_ECB)
+decrypted_padded_msg = decipher.decrypt(ciphertext_bytes)
+plaintext = unpad(decrypted_padded_msg, DES.block_size)
+return plaintext
+# Example usage
+message = "Hello, world! This is a secret message."
+message_bytes = message.encode('utf-8')
+encrypted_message = encrypt(message_bytes)
+print(f"Encrypted message (bytes): {encrypted_message.hex()}")
+decrypted_message_bytes = decrypt(encrypted_message)
+decrypted_message = decrypted_message_bytes.decode('utf-8')
+print(f"Decrypted message: {decrypted_message}")
